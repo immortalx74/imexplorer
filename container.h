@@ -77,6 +77,47 @@ struct Array
 		}
 	}
 
+	void Erase(int index)
+	{
+		assert(index >= 0 && index < this->length);
+
+		if (index == this->length - 1)
+		{
+			this->Pop();
+		}
+		else
+		{
+			T *dst = this->data + index;
+			T *src = this->data + index + 1;
+			size_t len = (this->length - index - 1) * sizeof(T);
+			memmove(dst, src, len);
+			this->length--;
+		}
+	}
+
+	void Erase(int start, int end)
+	{
+		assert(start >= 0 && start < this->length);
+		assert(start <= end && end < this->length);
+
+		if (start == this->length - 1)
+		{
+			this->Pop();
+		}
+		else if (start == end)
+		{
+			this->Erase(start);
+		}
+		else
+		{
+			T *dst = this->data + start;
+			T *src = this->data + end + 1;
+			size_t len = (this->length - end - 1) * sizeof(T);
+			memmove(dst, src, len);
+			this->length -= end - start + 1;
+		}
+	}
+
 	void Clear()
 	{
 		this->length = 0;

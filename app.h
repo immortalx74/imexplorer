@@ -71,6 +71,7 @@ struct FSRecordCollection
 	Array<FSRecord*> fs_records;
 	std::string label;
 	std::string path;
+	std::string filter;
 	bool opened = true;
 
 	FSRecordCollection(std::string label, size_t init_capacity);
