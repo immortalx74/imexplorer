@@ -1,0 +1,9 @@
+*.dll
+*.ini
+.vscode
+.vs
+build
+include
+lib
+external
+res
