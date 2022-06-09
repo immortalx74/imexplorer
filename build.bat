@@ -8,7 +8,7 @@ set CONFIG=debug
 set SOURCES=main.cpp external\imgui\imgui*.cpp
 set LINK= external/SDL2/lib/*.lib external/everything/lib/Everything64.lib opengl32.lib winmm.lib gdi32.lib shell32.lib
 
-IF %CONFIG%==debug set CFLAGS=/MP /MTd /EHsc /Zi /FC /nologo /W1 /Od
+IF %CONFIG%==debug set CFLAGS=/MP /MTd /EHsc /Zi /FC /nologo /W1 /Od /DUNICODE /D_UNICODE
 IF %CONFIG%==sanitize set CFLAGS=/MP /MTd /EHsc /Zi /FC /nologo /W1 /Od /fsanitize=address
 IF %CONFIG%==release set CFLAGS=/MP /MT /EHsc /FC /nologo /W1 /O2
 

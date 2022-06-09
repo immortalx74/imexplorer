@@ -4,15 +4,16 @@
 
 // NOTE: Requires SDL 2.0.17+
 
-int main(int, char **)
+int main( int, char** )
 {
 	App.Init();
 
-	Everything_SetMatchWholeWord(true);
-	Everything_SetSearchA("parent:");
-	Everything_QueryA(TRUE);
+	Everything_SetMatchWholeWord( true );
+	Everything_SetRequestFlags( EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_PATH | EVERYTHING_REQUEST_SIZE | EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME);
+	Everything_SetSearchA( "infolder:" );
+	Everything_QueryA( TRUE );
 
-	while (App.running)
+	while ( App.running )
 	{
 		App.ProcessEvents();
 		App.BeginFrame();
@@ -22,7 +23,7 @@ int main(int, char **)
 		UI.PreviewWindow();
 		UI.PropertiesWindow();
 		UI.EndDockSpace();
-		// ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow();
 
 		App.Render();
 	}

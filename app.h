@@ -8,6 +8,7 @@
 #include "external/everything/include/Everything.h"
 #include "container.h"
 #include <iostream>
+#include <string>
 
 // Forward declarations
 union Vec2;
@@ -15,7 +16,7 @@ union Vec4;
 struct App_s;
 struct UI_s;
 struct FSRecord;
-struct FSRecordCollection;
+struct FSRecordList;
 
 // Types
 union Vec2
@@ -34,14 +35,14 @@ typedef Vec4 Color;
 
 struct App_s
 {
-	int win_w = 1200;
-	int win_h = 800;
+	int win_w = 800;
+	int win_h = 600;
 	bool running = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_Event event;
 	ImGuiIO* imgui_io;
-	Color color_bg = {200, 100, 100, 255};
+	Color color_bg = { 200, 100, 100, 255 };
 
 	void Init();
 	void ProcessEvents();
@@ -52,6 +53,7 @@ struct App_s
 
 struct UI_s
 {
+	
 	void BeginDockSpace();
 	void EndDockSpace();
 	void FileListWindow();
@@ -66,21 +68,27 @@ struct FSRecord
 	int size;
 };
 
-struct FSRecordCollection
+struct FSRecordList
 {
-	Array<FSRecord*> fs_records;
+	// Array<FSRecord*> fs_records;
 	std::string label;
-	std::string path;
-	std::string filter;
+	std::string path = "";
+	std::string filter = "";
 	bool opened = true;
 
-	FSRecordCollection(std::string label, size_t init_capacity);
+	FSRecordList( std::string label, size_t init_capacity );
 };
 
 struct FSRCTabs_s
 {
-	Array<FSRecordCollection*> tabs;
+	Array<FSRecordList*> tabs;
 } FSRCTabs;
+
+
+
+
+// 
+
 
 // Load Fonts
 // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
