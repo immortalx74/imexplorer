@@ -1,0 +1,647 @@
+[Window][ds_window]
+Pos=0,0
+Size=800,600
+Collapsed=0
+
+[Window][Debug##Default]
+Pos=60,60
+Size=400,400
+Collapsed=0
+
+[Window][fs_window]
+Pos=0,19
+Size=517,547
+Collapsed=0
+DockId=0x00000001,0
+
+[Window][preview_window]
+Pos=0,568
+Size=800,32
+Collapsed=0
+DockId=0x00000004,0
+
+[Window][properties_window]
+Pos=519,19
+Size=281,547
+Collapsed=0
+DockId=0x00000002,0
+
+[Window][Dear ImGui Demo]
+Pos=245,0
+Size=550,680
+Collapsed=1
+
+[Window][Dear ImGui Style Editor]
+Pos=21,58
+Size=341,492
+Collapsed=0
+
+[Table][0x82523818,2]
+RefScale=13
+Column 0  Width=83
+Column 1  Width=118
+
+[Table][0xDDF5180F,2]
+RefScale=13
+Column 0  Width=93
+Column 1  Width=230
+
+[Table][0x315764F6,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=325
+
+[Table][0x33629B45,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0xDFC0E7BC,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0xD99EE769,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x353C9B90,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0xDBAB18DA,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x37096423,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x55302691,2]
+RefScale=13
+Column 0  Width=157
+Column 1  Width=68
+
+[Table][0xB9925A68,2]
+RefScale=13
+Column 0  Width=250
+Column 1  Width=211
+
+[Table][0x5705D922,2]
+RefScale=13
+Column 0  Width=250
+Column 1  Width=68
+
+[Table][0xBBA7A5DB,2]
+RefScale=13
+Column 0  Width=92
+Column 1  Width=68
+
+[Table][0xFBFC29DF,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x19088167,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x1A94BD72,2]
+RefScale=13
+Column 0  Width=323
+Column 1  Width=54
+
+[Table][0x7A339635,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0x085305EB,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0xBDE808DB,2]
+RefScale=13
+Column 0  Width=81
+Column 1  Width=27
+
+[Table][0x2B38AF9B,2]
+RefScale=13
+Column 0  Width=619
+Column 1  Width=48
+
+[Table][0x7013CB11,2]
+RefScale=13
+Column 0  Width=155
+Column 1  Width=54
+
+[Table][0x1B3D7ED4,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x130B11C0,2]
+RefScale=13
+Column 0  Width=543
+Column 1  Width=146
+
+[Table][0x8F6CA4ED,2]
+RefScale=13
+Column 0  Width=217
+Column 1  Width=27
+
+[Table][0x286C120B,2]
+RefScale=13
+Column 0  Width=175
+Column 1  Width=79
+
+[Table][0x4A63ED95,2]
+RefScale=13
+Column 0  Width=54
+Column 1  Width=27
+
+[Table][0x555E7264,2]
+RefScale=13
+Column 0  Width=172
+Column 1  Width=27
+
+[Table][0xD380D2FE,2]
+RefScale=13
+Column 0  Width=239
+Column 1  Width=27
+
+[Table][0xC15383BA,2]
+RefScale=13
+Column 0  Width=68
+Column 1  Width=27
+
+[Table][0x6EB6D5B3,2]
+RefScale=13
+Column 0  Width=148
+Column 1  Width=48
+
+[Table][0x14844C67,2]
+RefScale=13
+Column 0  Width=306
+Column 1  Width=27
+
+[Table][0xE4F17912,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0x514A7422,2]
+RefScale=13
+Column 0  Width=81
+Column 1  Width=27
+
+[Table][0xC79AD362,2]
+RefScale=13
+Column 0  Width=619
+Column 1  Width=48
+
+[Table][0xA6C1916C,2]
+RefScale=13
+Column 0  Width=54
+Column 1  Width=27
+
+[Table][0xB9FC0E9D,2]
+RefScale=13
+Column 0  Width=248
+Column 1  Width=27
+
+[Table][0x1359A8F1,2]
+RefScale=13
+Column 0  Width=162
+Column 1  Width=27
+
+[Table][0x17D2E51F,2]
+RefScale=13
+Column 0  Width=34
+Column 1  Width=27
+
+[Table][0xF5AAFD9E,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0xF636C18B,2]
+RefScale=13
+Column 0  Width=323
+Column 1  Width=54
+
+[Table][0x9691EACC,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0x63CED814,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0xF826309E,2]
+RefScale=13
+Column 0  Width=175
+Column 1  Width=88
+
+[Table][0x6222EAA7,2]
+RefScale=13
+Column 0  Width=148
+Column 1  Width=41
+
+[Table][0xA7FDE30C,2]
+RefScale=13
+Column 0  Width=68
+Column 1  Width=27
+
+[Table][0x0A66FA58,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0xBFDDF768,2]
+RefScale=13
+Column 0  Width=81
+Column 1  Width=27
+
+[Table][0x290D5028,2]
+RefScale=13
+Column 0  Width=283
+Column 1  Width=48
+
+[Table][0xA4CC50BD,2]
+RefScale=13
+Column 0  Width=216
+Column 1  Width=41
+
+[Table][0x515BD9F7,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0xE6C486A1,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0xC6806DDC,2]
+RefScale=13
+Column 0  Width=88
+Column 1  Width=27
+
+[Table][0xEDDF7787,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0xF891827F,2]
+RefScale=13
+Column 0  Width=88
+Column 1  Width=48
+
+[Table][0x5C7A5990,2]
+RefScale=13
+Column 0  Width=290
+Column 1  Width=48
+
+[Table][0xC7518F4E,2]
+RefScale=13
+Column 0  Width=296
+Column 1  Width=27
+
+[Table][0xF79F022D,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x2A221125,2]
+RefScale=13
+Column 0  Width=88
+Column 1  Width=27
+
+[Table][0xC2FC6F3A,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0xE9A243D9,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x4A5BD3F7,2]
+RefScale=13
+Column 0  Width=216
+Column 1  Width=41
+
+[Table][0x5353643D,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x017D0B7E,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x6F1D1569,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0xDF76C097,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0xD874E177,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x1A1B57C1,2]
+RefScale=13
+Column 0  Width=122
+Column 1  Width=54
+
+[Table][0x18A142C1,2]
+RefScale=13
+Column 0  Width=323
+Column 1  Width=54
+
+[Table][0x78066986,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0x8D595B5E,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0x16B1B3D4,2]
+RefScale=13
+Column 0  Width=175
+Column 1  Width=27
+
+[Table][0xF0BA14D4,2]
+RefScale=13
+Column 0  Width=101
+Column 1  Width=27
+
+[Table][0x8E80965E,2]
+RefScale=13
+Column 0  Width=148
+Column 1  Width=41
+
+[Table][0xF4033E38,2]
+RefScale=13
+Column 0  Width=323
+Column 1  Width=54
+
+[Table][0x94A4157F,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0x61FB27A7,2]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=27
+
+[Table][0x3DEE22E7,2]
+RefScale=13
+Column 0  Width=182
+Column 1  Width=34
+
+[Table][0x537F8B91,2]
+RefScale=13
+Column 0  Width=81
+Column 1  Width=27
+
+[Table][0xA9F413E6,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x6D098A8E,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x45566F1F,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x45CF8D79,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x81321411,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0xB2188453,2]
+RefScale=13
+Column 0  Width=88
+Column 1  Width=27
+
+[Table][0x7C520E02,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0xABF2B018,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0xDCF5808E,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0xBFF118C4,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0xE8EFF31C,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x044D8FE5,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x175E5526,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x0605D1AA,2]
+RefScale=13
+Column 0  Width=169
+Column 1  Width=68
+
+[Table][0xE19780B6,2]
+RefScale=13
+Column 0  Width=88
+Column 1  Width=27
+
+[Table][0x409FE82C,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0xE69A9EF4,2]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=27
+
+[Table][0x1D637E01,2]
+RefScale=13
+Column 0  Width=310
+Column 1  Width=68
+
+[Table][0x2817EE96,2]
+RefScale=13
+Column 0  Width=88
+Column 1  Width=27
+
+[Table][0xA0301A3E,2]
+RefScale=13
+Column 0  Width=142
+Column 1  Width=27
+
+[Table][0xF4FF7FCF,2]
+RefScale=13
+Column 0  Width=216
+Column 1  Width=68
+
+[Table][0x113602A5,2]
+Column 0  Weight=1.2039 Sort=0v
+Column 1  Weight=0.7961
+
+[Table][0xFD947E5C,2]
+Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+
+[Table][0xC9935533,3]
+Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+Column 2  Weight=1.0000
+
+[Table][0x64418101,3]
+RefScale=13
+Column 0  Width=61
+Column 1  Width=61
+Column 2  Width=61
+
+[Table][0x47600645,3]
+RefScale=13
+Column 0  Width=61
+Column 1  Width=61
+Column 2  Weight=1.0000
+
+[Table][0xDE6957FF,6]
+RefScale=13
+Column 0  Width=61
+Column 1  Width=61
+Column 2  Width=-1
+Column 3  Weight=1.0000
+Column 4  Weight=1.0000
+Column 5  Weight=-1.0000
+
+[Table][0x861D378E,3]
+Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+Column 2  Weight=1.0000
+
+[Table][0x1F146634,3]
+RefScale=13
+Column 0  Width=61
+Column 1  Width=61
+Column 2  Width=61
+
+[Table][0x1303FD16,2]
+Column 0  Weight=1.0000 Sort=0v
+Column 1  Weight=1.0000
+
+[Table][0x45A0E60D,7]
+RefScale=13
+Column 0  Width=48
+Column 1  Width=108
+Column 2  Width=108
+Column 3  Width=108
+Column 4  Width=108
+Column 5  Width=108
+Column 6  Width=108
+
+[Table][0xE0773582,3]
+Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+Column 2  Weight=1.0000
+
+[Table][0xC179E37C,3]
+RefScale=13
+Column 0  Width=105 Sort=0v
+Column 1  Width=61
+Column 2  Width=-1
+
+[Table][0x8DFA6E86,2]
+Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+
+[Table][0xFABAAEF7,2]
+Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+
+[Table][0x9B8E7538,3]
+RefScale=13
+Column 0  Width=110
+Column 1  Width=152
+Column 2  Width=153
+
+[Table][0xA9598DD1,3]
+RefScale=13
+Column 0  Width=68
+Column 1  Width=200
+Column 2  Width=68
+
+[Table][0xA43C3885,3]
+RefScale=13
+Column 0  Width=54
+Column 1  Width=54
+Column 2  Width=54
+
+[Table][0x20DF7A63,4]
+RefScale=13
+Column 0  Width=27
+Column 1  Width=163 Sort=0^
+Column 2  Width=41
+Column 3  Weight=1.0000
+
+[Table][0xFFA181EF,2]
+Column 0  Weight=1.0000 Sort=0v
+Column 1  Weight=1.0000
+
+[Docking][Data]
+DockSpace     ID=0x8120B510 Window=0x2AE29355 Pos=0,19 Size=800,581 Split=Y Selected=0x5DEF1392
+  DockNode    ID=0x00000003 Parent=0x8120B510 SizeRef=1520,547 Split=X
+    DockNode  ID=0x00000001 Parent=0x00000003 SizeRef=517,758 CentralNode=1 HiddenTabBar=1 Selected=0x0414BBD3
+    DockNode  ID=0x00000002 Parent=0x00000003 SizeRef=281,758 HiddenTabBar=1 Selected=0x6A7077DA
+  DockNode    ID=0x00000004 Parent=0x8120B510 SizeRef=1520,32 HiddenTabBar=1 Selected=0x3532321D
+

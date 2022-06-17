@@ -4,27 +4,47 @@
 
 void App_s::Init()
 {
-	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
-	{
-		printf( "Error: %s\n", SDL_GetError() );
-		return;
-	}
-
-	this->window = SDL_CreateWindow( "Explorer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->win_w, this->win_h, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
+	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
+	this->window = SDL_CreateWindow( "ImExplorer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->win_w, this->win_h, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
 	this->renderer = SDL_CreateRenderer( this->window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED );
-
-	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	this->imgui_io = &ImGui::GetIO();
-	this->imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
-	ImGui::StyleColorsDark();
-
 	ImGui_ImplSDL2_InitForSDLRenderer( this->window, this->renderer );
 	ImGui_ImplSDLRenderer_Init( this->renderer );
 
-	FSRCTabs.tabs.Reserve( 1 );
+	this->imgui_io = &ImGui::GetIO();
+	ImFontGlyphRangesBuilder builder;
+	static const ImWchar ranges[] = { 0x20, 0xFFFF, 0, };
+	builder.AddRanges( ranges );
+	App.font = this->imgui_io->Fonts->AddFontFromFileTTF( "res/DejaVuSansMono.ttf", 14, NULL, ranges );
+	App.icon_font = this->imgui_io->Fonts->AddFontFromFileTTF( "res/icons.ttf", 14 );
+	this->imgui_io->Fonts->Build();
+	this->imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
 
-	FSRecordList* fsrc = new FSRecordList( "This PC", 10 );
+	Settings.Read();
+	// Settings.Write();
+
+	FSTab* first_tab = new FSTab();
+	embraceTheDarkness();
+
+	// Init toolbar
+	ToolBarButton* btn;
+	btn = new ToolBarButton( "h", "New", &UI.navigation_toolbar );
+	btn = new ToolBarButton( "n", "Separator", &UI.navigation_toolbar, true );
+	btn = new ToolBarButton( "a", "Up", &UI.navigation_toolbar );
+	btn = new ToolBarButton( "b", "Previous", &UI.navigation_toolbar );
+	btn = new ToolBarButton( "c", "Next", &UI.navigation_toolbar );
+	btn = new ToolBarButton( "d", "Cut", &UI.main_toolbar );
+	btn = new ToolBarButton( "e", "Copy", &UI.main_toolbar );
+	btn = new ToolBarButton( "f", "Paste", &UI.main_toolbar );
+	btn = new ToolBarButton( "o", "Rename", &UI.main_toolbar );
+	btn = new ToolBarButton( "g", "Delete", &UI.main_toolbar );
+	btn = new ToolBarButton( "n", "Separator", &UI.main_toolbar, true );
+	btn = new ToolBarButton( "i", "View", &UI.main_toolbar );
+	btn = new ToolBarButton( "k", "Sort", &UI.main_toolbar );
+	btn = new ToolBarButton( "j", "Search", &UI.main_toolbar );
+	btn = new ToolBarButton( "m", "Properties", &UI.main_toolbar );
+	btn = new ToolBarButton( "l", "Settings", &UI.main_toolbar );
+
 }
 
 void App_s::ProcessEvents()
@@ -40,10 +60,6 @@ void App_s::ProcessEvents()
 		{
 			SDL_GetWindowSize( this->window, &this->win_w, &this->win_h );
 		}
-		// if (this->event.type == SDL_WINDOWEVENT && this->event.window.event == SDL_WINDOWEVENT_CLOSE && this->event.window.windowID == SDL_GetWindowID(this->window))
-		// {
-		// 	this->running = true;
-		// }
 	}
 }
 

@@ -3,7 +3,7 @@
 template <typename T>
 struct Array
 {
-	T *data;
+	T* data;
 	int capacity;
 	int length;
 
@@ -14,53 +14,53 @@ struct Array
 		this->length = 0;
 	}
 
-	inline void Reserve(int initial_capacity)
+	inline void Reserve( int initial_capacity )
 	{
-		assert(initial_capacity > 0);
+		assert( initial_capacity > 0 );
 
 		this->data = 0;
 		this->capacity = initial_capacity;
 		this->length = 0;
 
-		this->data = (T *)malloc(initial_capacity * sizeof(T));
+		this->data = ( T* )malloc( initial_capacity * sizeof( T ) );
 	}
 
-	inline T &operator[](int index)
+	inline T& operator[]( int index )
 	{
-		assert(index >= 0 && index < this->length);
-		return this->data[index];
+		assert( index >= 0 && index < this->length );
+		return this->data[ index ];
 	}
 
-	inline const T operator[](int index) const
+	inline const T operator[]( int index ) const
 	{
-		assert(index >= 0 && index < this->length);
-		return this->data[index];
+		assert( index >= 0 && index < this->length );
+		return this->data[ index ];
 	}
 
-	void Push(T elem)
+	void Push( T elem )
 	{
-		if (this->capacity == 0)
+		if ( this->capacity == 0 )
 		{
-			Resize(1);
+			Resize( 1 );
 		}
-		else if (this->length == this->capacity)
+		else if ( this->length == this->capacity )
 		{
-			Resize(2 * this->capacity);
+			Resize( 2 * this->capacity );
 		}
 
-		this->data[length] = elem;
+		this->data[ length ] = elem;
 		this->length++;
 	}
 
-	void Resize(int new_capacity)
+	void Resize( int new_capacity )
 	{
-		assert(new_capacity > 0);
+		assert( new_capacity > 0 );
 
-		this->data = (T *)realloc(this->data, new_capacity * sizeof(T));
+		this->data = ( T* )realloc( this->data, new_capacity * sizeof( T ) );
 
-		if (new_capacity < this->capacity)
+		if ( new_capacity < this->capacity )
 		{
-			if (this->length > new_capacity)
+			if ( this->length > new_capacity )
 			{
 				this->length = new_capacity;
 			}
@@ -71,49 +71,49 @@ struct Array
 
 	void Pop()
 	{
-		if (this->length > 0)
+		if ( this->length > 0 )
 		{
 			this->length--;
 		}
 	}
 
-	void Erase(int index)
+	void Erase( int index )
 	{
-		assert(index >= 0 && index < this->length);
+		assert( index >= 0 && index < this->length );
 
-		if (index == this->length - 1)
+		if ( index == this->length - 1 )
 		{
 			this->Pop();
 		}
 		else
 		{
-			T *dst = this->data + index;
-			T *src = this->data + index + 1;
-			size_t len = (this->length - index - 1) * sizeof(T);
-			memmove(dst, src, len);
+			T* dst = this->data + index;
+			T* src = this->data + index + 1;
+			size_t len = ( this->length - index - 1 ) * sizeof( T );
+			memmove( dst, src, len );
 			this->length--;
 		}
 	}
 
-	void Erase(int start, int end)
+	void Erase( int start, int end )
 	{
-		assert(start >= 0 && start < this->length);
-		assert(start <= end && end < this->length);
+		assert( start >= 0 && start < this->length );
+		assert( start <= end && end < this->length );
 
-		if (start == this->length - 1)
+		if ( start == this->length - 1 )
 		{
 			this->Pop();
 		}
-		else if (start == end)
+		else if ( start == end )
 		{
-			this->Erase(start);
+			this->Erase( start );
 		}
 		else
 		{
-			T *dst = this->data + start;
-			T *src = this->data + end + 1;
-			size_t len = (this->length - end - 1) * sizeof(T);
-			memmove(dst, src, len);
+			T* dst = this->data + start;
+			T* src = this->data + end + 1;
+			size_t len = ( this->length - end - 1 ) * sizeof( T );
+			memmove( dst, src, len );
 			this->length -= end - start + 1;
 		}
 	}
@@ -125,11 +125,11 @@ struct Array
 
 	int SizeInBytes()
 	{
-		return this->length * sizeof(T);
+		return this->length * sizeof( T );
 	}
 
 	void Destroy()
 	{
-		free(this->data);
+		free( this->data );
 	}
 };

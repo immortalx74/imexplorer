@@ -4,12 +4,35 @@
 
 void UI_s::BeginDockSpace()
 {
-	ImGuiDockNodeFlags_AutoHideTabBar;
-	ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	ImGui::PushStyleVar( ImGuiStyleVar_WindowRounding, 0.0f );
+	ImGui::PushStyleVar( ImGuiStyleVar_WindowBorderSize, 0.0f );
+	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 0.0f, 0.0f ) );
+
 	ImGui::SetNextWindowPos( ImVec2( 0, 0 ) );
 	ImGui::SetNextWindowSize( ImVec2( App.win_w, App.win_h ) );
-	ImGui::Begin( "dock_space", NULL, flags );
-	ImGui::DockSpace( ImGui::GetID( "dock_space" ) );
+	ImGui::Begin( "ds_window", NULL, UI.ds_window_flags );
+
+	if ( Settings.show_menubar )
+	{
+		UI.RenderMenu();
+	}
+	if ( Settings.show_toolbar )
+	{
+		UI.RenderToolBar( UI.main_toolbar );
+		ImGui::Separator();
+	}
+	if ( Settings.show_navigation_bar )
+	{
+		UI.RenderToolBar( UI.navigation_toolbar );
+		ImGui::SameLine();
+		UI.RenderBreadCrumb();
+		ImGui::SameLine();
+		UI.RenderFilter();
+		ImGui::Separator();
+	}
+
+	ImGui::DockSpace( ImGui::GetID( "ds_window" ), ImVec2( 0, 0 ), ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoTabBar );
+	ImGui::PopStyleVar( 3 );
 }
 
 void UI_s::EndDockSpace()
@@ -17,112 +40,31 @@ void UI_s::EndDockSpace()
 	ImGui::End();
 }
 
-void UI_s::FileListWindow()
+void UI_s::RenderFSWindow()
 {
-	ImGui::Begin( "file_list_window", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
-	if ( ImGui::BeginTabBar( "main_tabbar", ImGuiTabBarFlags_Reorderable ) )
+	ImGui::Begin( "fs_window", NULL, UI.fs_window_flags );
+
+	if ( ImGui::BeginTabBar( "fs_tab_bar", UI.fs_tab_bar_flags ) )
 	{
-		for ( int i = 0; i < FSRCTabs.tabs.length; i++ )
+		for ( int i = 0; i < FSTabList.tabs.length; ++i )
 		{
-			std::string tabid = FSRCTabs.tabs[ i ]->label + "##" + std::to_string( i );
-
-			if ( ImGui::BeginTabItem( tabid.c_str(), &FSRCTabs.tabs[ i ]->opened ) )
+			if ( ImGui::BeginTabItem( ( FSTabList.tabs[ i ]->label + "###" + std::to_string( i ) ).c_str(), &FSTabList.tabs[ i ]->opened ) )
 			{
-				if ( ImGui::Button( ( "Up##" + std::to_string( i ) ).c_str() ) )
+				FSTabList.active_tab_index = i;
+
+				if ( ImGui::BeginTable( ( "fs_table##" + std::to_string( i ) ).c_str(), FSTabList.tabs[ i ]->num_columns, fs_table_flags ) )
 				{
-				}
-				ImGui::SameLine();
-				if ( ImGui::Button( "Prev" ) )
-				{
-				}
-				ImGui::SameLine();
-				if ( ImGui::Button( "Next" ) )
-				{
-				}
-
-				char buf[ 100 ] = "type some text";
-				ImGui::PushItemWidth( ImGui::GetWindowWidth() - 16 );
-				ImGui::InputText( "##type here", buf, 100 );
-				ImGui::PopItemWidth();
-
-
-				DWORD result_len = Everything_GetNumResults();
-				ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
-				static bool selected[ 1000 ];
-
-				if ( ImGui::BeginTable( "my_table", 2, flags ) )
-				{
-					ImGui::TableSetupColumn( "Name" );
-					ImGui::TableSetupColumn( "Size" );
-					ImGui::TableSetupScrollFreeze( 0, 1 );
-					ImGui::TableHeadersRow();
-
-					for ( int row = 0; row < result_len; row++ )
-					{
-						ImGui::TableNextRow();
-
-						// column name
-						ImGui::TableSetColumnIndex( 0 );
-						LPCSTR str = Everything_GetResultFileNameA( row );
-
-						if ( ImGui::Selectable( str, selected[ row ], ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns ) )
-						{
-							if ( ImGui::IsMouseDoubleClicked( 0 ) )
-							{
-								Everything_SetSearchA( "infolder:D:" );
-								Everything_QueryA( TRUE );
-								std::cout << row << std::endl;
-							}
-							if ( !ImGui::GetIO().KeyCtrl )
-							{
-								memset( selected, 0, sizeof( selected ) );
-							}
-							selected[ i ] = !selected[ row ];
-						}
-
-						// column size
-						ImGui::TableSetColumnIndex( 1 );
-						LARGE_INTEGER entry_size = { 0 };
-						Everything_GetResultSize( row, &entry_size );
-						ImGui::Text( std::to_string( entry_size.LowPart + entry_size.HighPart ).c_str() );
-
-					}
-
+					UI.RenderTable();
 					ImGui::EndTable();
 				}
-
-				// if ( ImGui::BeginListBox( ( "##listbox" + std::to_string( i ) ).c_str(), ImVec2( 0.0f, ImGui::GetContentRegionAvail().y ) ) )
-				// {
-				// 	DWORD result_len = Everything_GetNumResults();
-				// 	static bool selected[ 1000 ];
-
-				// 	for ( DWORD i = 0; i < result_len; i++ )
-				// 	{
-				// 		LPCSTR str = Everything_GetResultFileNameA( i );
-
-				// 		if ( ImGui::Selectable( str, selected[ i ], ImGuiSelectableFlags_AllowDoubleClick ) )
-				// 		{
-				// 			if ( ImGui::IsMouseDoubleClicked( 0 ) )
-				// 			{
-				// 				Everything_SetSearchA( "infolder:D:" );
-				// 				Everything_QueryA( TRUE );
-				// 				std::cout << i << std::endl;
-				// 			}
-				// 			if ( !ImGui::GetIO().KeyCtrl )
-				// 			{
-				// 				memset( selected, 0, sizeof( selected ) );
-				// 			}
-				// 			selected[ i ] = !selected[ i ];
-				// 		}
-				// 	}
-				// 	ImGui::EndListBox();
-				// }
 				ImGui::EndTabItem();
 			}
 		}
+
 		if ( ImGui::TabItemButton( "+", ImGuiTabItemFlags_Trailing | ImGuiTabItemFlags_NoTooltip ) )
 		{
-			FSRecordList* fsrc = new FSRecordList( "This PC", 10 );
+			FSTab* tab = new FSTab();
+			FSTabList.active_tab_index = FSTabList.tabs.length - 1;
 		}
 
 		ImGui::EndTabBar();
@@ -130,14 +72,216 @@ void UI_s::FileListWindow()
 	ImGui::End();
 }
 
-void UI_s::PreviewWindow()
+void UI_s::RenderPreviewWindow()
 {
-	ImGui::Begin( "preview_window", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+	ImGui::Begin( "preview_window", NULL, UI.preview_window_flags );
 	ImGui::End();
 }
 
-void UI_s::PropertiesWindow()
+void UI_s::RenderPropertiesWindow()
 {
-	ImGui::Begin( "properties_window", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+	ImGui::Begin( "properties_window", NULL, UI.properties_window_flags );
 	ImGui::End();
+}
+
+void UI_s::RenderTable()
+{
+	int record_count = FSTabList.tabs[ FSTabList.active_tab_index ]->records.length;
+	ImGui::TableSetupColumn( "Name" );
+	ImGui::TableSetupColumn( "Size" );
+	ImGui::TableSetupScrollFreeze( 0, 1 );
+	ImGui::TableHeadersRow();
+
+	for ( int i = 0; i < record_count; i++ )
+	{
+		ImGui::TableNextRow();
+
+		// column name
+		ImGui::TableSetColumnIndex( 0 );
+		FSRecord* record = FSTabList.tabs[ FSTabList.active_tab_index ]->records[ i ];
+
+		if ( ImGui::Selectable( record->name, record->selected, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns ) )
+		{
+			if ( ImGui::IsMouseDoubleClicked( 0 ) )
+			{
+				if ( record->type == FSRecordType_e::Volume )
+				{
+					FSTabList.tabs[ FSTabList.active_tab_index ]->PathAddVolume( record->name );
+				}
+				else if ( record->type == FSRecordType_e::Folder )
+				{
+					std::string* temp = new std::string( "blah" );
+					*temp = record->name;
+					// FSTabList.tabs[ FSTabList.active_tab_index ]->PathAddFolder( record->name );
+					FSTabList.tabs[ FSTabList.active_tab_index ]->PathAddFolder( temp );
+					return;
+				}
+			}
+			// if ( !ImGui::GetIO().KeyCtrl )
+			// {
+			// 	memset( selected, 0, sizeof( selected ) );
+			// }
+			// selected[ tab_index ] = !selected[ i ];
+		}
+
+		// column size
+		ImGui::TableSetColumnIndex( 1 );
+		if ( record->type == FSRecordType_e::File )
+		{
+			ImGui::Text( std::to_string( record->size.LowPart + record->size.HighPart ).c_str() );
+		}
+	}
+}
+
+void UI_s::RenderMenu()
+{
+	if ( ImGui::BeginMenuBar() )
+	{
+
+		if ( ImGui::BeginMenu( "New" ) )
+		{
+			if ( ImGui::MenuItem( "Folder" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Shortcut" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Text Document" ) )
+			{
+
+			}
+			ImGui::EndMenu();
+		}
+		if ( ImGui::BeginMenu( "Edit" ) )
+		{
+			if ( ImGui::MenuItem( "Cut" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Copy" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Paste" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Rename" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Delete" ) )
+			{
+
+			}
+			ImGui::EndMenu();
+		}
+		if ( ImGui::BeginMenu( "View" ) )
+		{
+			if ( ImGui::MenuItem( "Details" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Small Icons" ) )
+			{
+
+			}
+			if ( ImGui::MenuItem( "Large Icons" ) )
+			{
+
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+}
+
+void UI_s::RenderToolBar( Array<ToolBarButton*> toolbar )
+{
+	for ( int i = 0; i < toolbar.length; ++i )
+	{
+		ImGui::PushFont( App.icon_font );
+
+		if ( toolbar[ i ]->is_separator )
+		{
+			ImGui::BeginDisabled();
+			ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
+			ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1, 1, 1, 0.3 ) );
+		}
+		if ( ImGui::Button( toolbar[ i ]->btn_char ) )
+		{
+
+		}
+		if ( toolbar[ i ]->is_separator )
+		{
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor( 2 );
+		}
+		ImGui::PopFont();
+
+		if ( ImGui::IsItemHovered() )
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text( toolbar[ i ]->tooltip );
+			ImGui::EndTooltip();
+		}
+
+		if ( i < toolbar.length - 1 )
+		{
+			ImGui::SameLine();
+		}
+	}
+}
+
+void UI_s::RenderBreadCrumb()
+{
+	ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0, 0 ) );
+	ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
+
+	ImGui::SmallButton( ( "This PC##adada" ) );
+
+	FSPath cur_path = FSTabList.tabs[ FSTabList.active_tab_index ]->path_composed;
+
+	if ( cur_path.volume != "" )
+	{
+		ImGui::SameLine();
+		ImGui::Text( ">" );
+		ImGui::SameLine();
+		ImGui::Button( cur_path.volume.c_str() );
+	}
+
+	int len = FSTabList.tabs[ FSTabList.active_tab_index ]->path_composed.folder.length;
+	if ( len > 0 )
+	{
+		for ( int i = 0; i < len; ++i )
+		{
+			ImGui::SameLine();
+			ImGui::Text( ">" );
+			ImGui::SameLine();
+			ImGui::Button( cur_path.folder[ i ]->c_str() );
+		}
+	}
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor();
+}
+
+void UI_s::RenderFilter()
+{
+	static char* buf = ( char* )malloc( 100 );
+	memset( buf, 0, 100 );
+	// ImGui::PushItemWidth( ImGui::GetWindowWidth() - 114 );
+	ImGui::PushItemWidth( ImGui::GetWindowWidth() - ImGui::GetCursorPosX() - 2 );
+	// ImGui::InputText( "##type here", FSTabList.tabs[ FSTabList.active_tab_index ]->filter, 100 );
+	ImGui::InputText( "##type here", buf, 100 );
+	ImGui::PopItemWidth();
+}
+
+ToolBarButton::ToolBarButton( const char* btn_char, const char* tooltip, Array<ToolBarButton*>* toolbar, bool is_separator )
+{
+	this->btn_char = btn_char;
+	this->tooltip = tooltip;
+	this->is_separator = is_separator;
+	toolbar->Push( this );
 }
