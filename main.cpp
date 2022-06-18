@@ -9,11 +9,14 @@
 #include "ui.cpp"
 #include "filesystem.cpp"
 #include "settings.cpp"
+#include "toolbar.cpp"
 
 // NOTE: Requires SDL 2.0.17+
 
 int main( int, char** )
 {
+	// void( UI_s:: * foo )( ) = &UI_s::EndDockSpace;
+
 	App.Init();
 
 	// char* ttt = "ΓΔΛ";
@@ -37,10 +40,22 @@ int main( int, char** )
 
 		UI.BeginDockSpace();
 		UI.RenderFSWindow();
-		UI.RenderPreviewWindow();
+		if ( Settings.show_preview_pane )
+		{
+			UI.RenderPreviewWindow();
+		}
+		if ( App.debug )
+		{
+			UI.RenderDebugWindow();
+		}
+
 		UI.RenderPropertiesWindow();
 		UI.EndDockSpace();
-		ImGui::ShowDemoWindow();
+
+		if ( App.demo )
+		{
+			ImGui::ShowDemoWindow();
+		}
 
 		App.Render();
 	}

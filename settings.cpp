@@ -46,4 +46,7 @@ void Settings_s::SetDefaults()
 	Settings.show_menubar = true;
 	Settings.show_toolbar = true;
 	Settings.show_navigation_bar = true;
+	Settings.show_preview_pane = true;
+
+	Settings.Write();
 }

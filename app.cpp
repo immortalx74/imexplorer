@@ -28,22 +28,22 @@ void App_s::Init()
 
 	// Init toolbar
 	ToolBarButton* btn;
-	btn = new ToolBarButton( "h", "New", &UI.navigation_toolbar );
-	btn = new ToolBarButton( "n", "Separator", &UI.navigation_toolbar, true );
-	btn = new ToolBarButton( "a", "Up", &UI.navigation_toolbar );
-	btn = new ToolBarButton( "b", "Previous", &UI.navigation_toolbar );
-	btn = new ToolBarButton( "c", "Next", &UI.navigation_toolbar );
-	btn = new ToolBarButton( "d", "Cut", &UI.main_toolbar );
-	btn = new ToolBarButton( "e", "Copy", &UI.main_toolbar );
-	btn = new ToolBarButton( "f", "Paste", &UI.main_toolbar );
-	btn = new ToolBarButton( "o", "Rename", &UI.main_toolbar );
-	btn = new ToolBarButton( "g", "Delete", &UI.main_toolbar );
-	btn = new ToolBarButton( "n", "Separator", &UI.main_toolbar, true );
-	btn = new ToolBarButton( "i", "View", &UI.main_toolbar );
-	btn = new ToolBarButton( "k", "Sort", &UI.main_toolbar );
-	btn = new ToolBarButton( "j", "Search", &UI.main_toolbar );
-	btn = new ToolBarButton( "m", "Properties", &UI.main_toolbar );
-	btn = new ToolBarButton( "l", "Settings", &UI.main_toolbar );
+	btn = new ToolBarButton( "h", "New", &UI.navigation_toolbar, ToolBarButtonID_e::NavigationToolBar_New );
+	btn = new ToolBarButton( "n", "Separator", &UI.navigation_toolbar, ToolBarButtonID_e::Separator, true );
+	btn = new ToolBarButton( "a", "Up", &UI.navigation_toolbar, ToolBarButtonID_e::NavigationToolBar_Up );
+	btn = new ToolBarButton( "b", "Previous", &UI.navigation_toolbar, ToolBarButtonID_e::NavigationToolBar_Previous );
+	btn = new ToolBarButton( "c", "Next", &UI.navigation_toolbar, ToolBarButtonID_e::NavigationToolBar_Next );
+	btn = new ToolBarButton( "d", "Cut", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Cut );
+	btn = new ToolBarButton( "e", "Copy", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Copy );
+	btn = new ToolBarButton( "f", "Paste", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Paste );
+	btn = new ToolBarButton( "o", "Rename", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Rename );
+	btn = new ToolBarButton( "g", "Delete", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Delete );
+	btn = new ToolBarButton( "n", "Separator", &UI.main_toolbar, ToolBarButtonID_e::Separator, true );
+	btn = new ToolBarButton( "i", "View", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_View );
+	btn = new ToolBarButton( "k", "Sort", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Sort );
+	btn = new ToolBarButton( "j", "Search", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Search );
+	btn = new ToolBarButton( "m", "Properties", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Properties );
+	btn = new ToolBarButton( "l", "Settings", &UI.main_toolbar, ToolBarButtonID_e::MainToolBar_Settings );
 
 }
 

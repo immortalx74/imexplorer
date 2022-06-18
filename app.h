@@ -96,6 +96,25 @@ enum struct FSPathElement_e
 	Folder
 };
 
+enum struct ToolBarButtonID_e
+{
+	Separator,
+	NavigationToolBar_New,
+	NavigationToolBar_Up,
+	NavigationToolBar_Previous,
+	NavigationToolBar_Next,
+	MainToolBar_Cut,
+	MainToolBar_Copy,
+	MainToolBar_Paste,
+	MainToolBar_Rename,
+	MainToolBar_Delete,
+	MainToolBar_View,
+	MainToolBar_Sort,
+	MainToolBar_Search,
+	MainToolBar_Properties,
+	MainToolBar_Settings
+};
+
 union Vec2
 {
 	struct { int x, y; };
@@ -112,6 +131,8 @@ typedef Vec4 Color;
 
 struct App_s
 {
+	bool debug = false;
+	bool demo = false;
 	int win_w = 800;
 	int win_h = 600;
 	bool running = true;
@@ -142,23 +163,26 @@ struct ToolBarButton
 {
 	const char* btn_char;
 	const char* tooltip;
+	bool enabled = true;
 	bool is_separator = false;
+	ToolBarButtonID_e ID;
 
-	ToolBarButton( const char* btn_char, const char* tooltip, Array<ToolBarButton*>* toolbar, bool is_separator = false );
+	ToolBarButton( const char* btn_char, const char* tooltip, Array<ToolBarButton*>* toolbar, ToolBarButtonID_e ID, bool is_separator = false );
+	void OnClick( ToolBarButtonID_e ID );
 };
 
 struct UI_s
 {
-	ImGuiWindowFlags ds_window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus;
+	ImGuiWindowFlags ds_window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus;
 	ImGuiWindowFlags fs_window_flags = 0; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 	ImGuiWindowFlags properties_window_flags = 0; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 	ImGuiWindowFlags preview_window_flags = 0; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 	ImGuiTabBarFlags fs_tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable; //  | ImGuiTabBarFlags_Reorderable
 	ImGuiTableFlags fs_table_flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Sortable;
-	Array<ToolBarButton*> toolbar_buttons;
 	Array<ToolBarButton*> main_toolbar;
 	Array<ToolBarButton*> navigation_toolbar;
 
+	void RenderDebugWindow();
 	void BeginDockSpace();
 	void EndDockSpace();
 	void RenderFSWindow();
@@ -170,6 +194,7 @@ struct UI_s
 	void RenderNavigationBar();
 	void RenderBreadCrumb();
 	void RenderFilter();
+	void RenderSettingsWindow();
 } UI;
 
 struct Everything
@@ -199,13 +224,16 @@ struct FSTab
 	int num_columns = 2; // NOTE temp, default should be configurable and each tab should remember its visble columns
 	bool opened = true;
 	Array<FSRecord*> records;
-	FSPath path_composed;
+	FSPath path;
 
 	FSTab();
 	void PathAddVolume( std::string volume_name );
 	void PathAddFolder( std::string* folder_name );
+	void PathRemoveVolume();
+	void PathRemoveFolder( int count );
 	void Populate();
 };
+
 
 struct FSTabList_s
 {
@@ -215,9 +243,10 @@ struct FSTabList_s
 
 struct Settings_s
 {
-	bool show_menubar;
-	bool show_toolbar;
-	bool show_navigation_bar;
+	bool show_menubar = true;
+	bool show_toolbar = true;
+	bool show_navigation_bar = true;
+	bool show_preview_pane;
 
 	void Read();
 	void Write();

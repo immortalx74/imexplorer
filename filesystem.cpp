@@ -11,28 +11,28 @@ FSTab::FSTab()
 void FSTab::Populate()
 {
 	std::string final_path;
-	if ( this->path_composed.volume == "" )
+	if ( this->path.volume == "" )
 	{
 		final_path = "infolder:";
 		this->label = "This PC";
 	}
 	else
 	{
-		final_path = "infolder:" + this->path_composed.volume;
+		final_path = "infolder:" + this->path.volume;
 
-		int len = this->path_composed.folder.length;
+		int len = this->path.folder.length;
 		for ( int i = 0; i < len; ++i )
 		{
-			final_path += "\\" + *this->path_composed.folder[ i ];
+			final_path += "\\" + *this->path.folder[ i ];
 		}
 
 		if ( len == 0 )
 		{
-			this->label = this->path_composed.volume;
+			this->label = this->path.volume;
 		}
 		else
 		{
-			this->label = *this->path_composed.folder[ this->path_composed.folder.length - 1 ];
+			this->label = *this->path.folder[ this->path.folder.length - 1 ];
 		}
 	}
 
@@ -92,11 +92,27 @@ void FSTab::Populate()
 
 void FSTab::PathAddVolume( std::string volume_name )
 {
-	this->path_composed.volume = volume_name;
+	this->path.volume = volume_name;
 	this->Populate();
 }
 void FSTab::PathAddFolder( std::string* folder_name )
 {
-	this->path_composed.folder.Push( folder_name );
+	this->path.folder.Push( folder_name );
+	this->Populate();
+}
+
+void FSTab::PathRemoveFolder( int count )
+{
+	for ( int i = 0; i < count; ++i )
+	{
+		this->path.folder.Pop();
+	}
+
+	this->Populate();
+}
+
+void FSTab::PathRemoveVolume()
+{
+	this->path.volume = "";
 	this->Populate();
 }
