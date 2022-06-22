@@ -28,6 +28,7 @@ void ToolBarButton::OnClick( ToolBarButtonID_e ID )
 	}
 	else if ( ID == ToolBarButtonID_e::MainToolBar_Cut )
 	{
-		
+		// ImGuiStyle* style = &ImGui::GetStyle();
+		// UI.SetScale( 1.4f );
 	}
 }

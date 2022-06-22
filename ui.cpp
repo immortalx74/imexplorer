@@ -96,17 +96,26 @@ void UI_s::RenderTable()
 	int record_count = FSTabList.tabs[ FSTabList.active_tab_index ]->records.length;
 	ImGui::TableSetupColumn( "Name" );
 	ImGui::TableSetupColumn( "Size" );
+	ImGui::TableSetupColumn( "Date Created" );
 	ImGui::TableSetupScrollFreeze( 0, 1 );
 	ImGui::TableHeadersRow();
 
 	for ( int i = 0; i < record_count; i++ )
 	{
-		ImGui::TableNextRow();
+		ImGui::TableNextRow( ImGuiTableRowFlags_None, 22.0f );
 
-		// column name
+		// extension icon
 		ImGui::TableSetColumnIndex( 0 );
 		FSRecord* record = FSTabList.tabs[ FSTabList.active_tab_index ]->records[ i ];
 
+		int cell_x = record->icon_idx % 32;
+		int cell_y = record->icon_idx / 32;
+		ImVec2 uv0 = ImVec2( ( 64.0f * cell_x ) / ( float )App.icon_tex_x, ( 64.0f * cell_y ) / ( float )App.icon_tex_y );
+		ImVec2 uv1 = ImVec2( ( ( 64.0f * cell_x ) + 64.0f ) / ( float )App.icon_tex_x, ( ( 64.0f * cell_y ) + 64.0f ) / ( float )App.icon_tex_y );
+		ImGui::Image( App.icon_tex, ImVec2( 16, 16 ), uv0, uv1 );
+		ImGui::SameLine();
+
+		// column name
 		if ( ImGui::Selectable( record->name, record->selected, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns ) )
 		{
 			if ( ImGui::IsMouseDoubleClicked( 0 ) )
@@ -133,7 +142,6 @@ void UI_s::RenderTable()
 					}
 					std::string fname = record->name;
 					std::string paf = vol + path + fname;
-					std::cout << paf << std::endl;
 
 					ShellExecuteW( GetDesktopWindow(), L"open", Util.ConvertUtf8ToWide( paf ).c_str(), 0, 0, SW_SHOW );
 				}
@@ -149,8 +157,12 @@ void UI_s::RenderTable()
 		ImGui::TableSetColumnIndex( 1 );
 		if ( record->type == FSRecordType_e::File )
 		{
-			ImGui::Text( std::to_string( record->size.LowPart + record->size.HighPart ).c_str() );
+			ImGui::Text( record->size.text );
 		}
+
+		// column date created
+		ImGui::TableSetColumnIndex( 2 );
+		ImGui::Text( record->date_created.text );
 	}
 }
 
@@ -342,4 +354,17 @@ void UI_s::RenderDebugWindow()
 	ImGui::Begin( "Debug Window" );
 	ImGui::Text( std::to_string( App.win_w ).c_str() );
 	ImGui::End();
+}
+
+void UI_s::SetScale( float scale )
+{
+	ImFontGlyphRangesBuilder builder;
+	static const ImWchar ranges[] = { 0x20, 0xFFFF, 0, };
+	builder.AddRanges( ranges );
+	App.font = App.imgui_io->Fonts->AddFontFromFileTTF( "res/DejaVuSansMono.ttf", 14.0f * scale, NULL, ranges );
+	App.icon_font = App.imgui_io->Fonts->AddFontFromFileTTF( "res/icons.ttf", 14.0f * scale );
+	App.imgui_io->Fonts->Build();
+
+	ImGuiStyle* style = &ImGui::GetStyle();
+	style->ScaleAllSizes( scale );
 }

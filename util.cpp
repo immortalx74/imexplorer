@@ -33,3 +33,31 @@ std::wstring Util_s::ConvertUtf8ToWide( const std::string& str )
 	MultiByteToWideChar( CP_UTF8, 0, str.c_str(), str.length(), &wstr[ 0 ], count );
 	return wstr;
 }
+
+void Util_s::FileSizeToString( LARGE_INTEGER n, char** output )
+{
+	std::string sz = std::to_string( ( unsigned long long )ceil( ( double )n.QuadPart / 1024 ) );
+	int len = sz.length();
+
+	for ( int i = len; i >= 0; --i )
+	{
+		if ( i != len && i != 0 && ( len - i ) % 3 == 0 )
+		{
+			sz.insert( i, 1, ',' );
+		}
+	}
+	sz += " KB";
+
+	int str_len = sz.length();
+	*output = ( char* )malloc( str_len + 1 );
+	strcpy( *output, sz.c_str() );
+}
+
+void Util_s::SystemTimeToString( SYSTEMTIME st, char** output )
+{
+	std::string dt = std::to_string( st.wDay ) + "/" + std::to_string( st.wMonth ) + "/" + std::to_string( st.wYear ) + " " + std::to_string( st.wHour ) + ":" + std::to_string( st.wMinute );
+
+	int str_len = dt.length();
+	*output = ( char* )malloc( str_len + 1 );
+	strcpy( *output, dt.c_str() );
+}

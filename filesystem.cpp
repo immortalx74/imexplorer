@@ -10,20 +10,22 @@ FSTab::FSTab()
 
 void FSTab::Populate()
 {
-	std::string final_path;
+	std::string search_query;
+
 	if ( this->path.volume == "" )
 	{
-		final_path = "infolder:";
+		search_query = "infolder:";
 		this->label = "This PC";
 	}
 	else
 	{
-		final_path = "infolder:" + this->path.volume;
+		search_query = "infolder:\"" + this->path.volume;
 
 		int len = this->path.folder.length;
+
 		for ( int i = 0; i < len; ++i )
 		{
-			final_path += "\\" + *this->path.folder[ i ];
+			search_query += "\\" + *this->path.folder[ i ];
 		}
 
 		if ( len == 0 )
@@ -34,23 +36,32 @@ void FSTab::Populate()
 		{
 			this->label = *this->path.folder[ this->path.folder.length - 1 ];
 		}
+
+		search_query += "\"";
 	}
 
-	Everything_SetRequestFlags( EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_PATH | EVERYTHING_REQUEST_SIZE | EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME );
-	Everything_SetSearchW( Util.ConvertUtf8ToWide( final_path ).c_str() );
+	Everything_SetRequestFlags( Everything.request_flags );
+	Everything_SetSearchW( Util.ConvertUtf8ToWide( search_query ).c_str() );
 	Everything_QueryW( TRUE );
 	DWORD record_count = Everything_GetNumResults();
 
-
-	if ( this->records.capacity == 0 )
+	if ( record_count > 0 )
 	{
-		this->records.Reserve( record_count );
+		if ( this->records.capacity == 0 )
+		{
+			this->records.Reserve( record_count );
+		}
+		else
+		{
+			this->records.Clear();
+			// this->records.Destroy();
+			this->records.Reserve( record_count );
+		}
 	}
 	else
 	{
 		this->records.Clear();
 		this->records.Destroy();
-		this->records.Reserve( record_count );
 	}
 
 	// populate records
@@ -73,18 +84,52 @@ void FSTab::Populate()
 		if ( Everything_IsVolumeResult( i ) )
 		{
 			rec->type = FSRecordType_e::Volume;
+			rec->icon_idx = 405; // NOTE volume icon idx
 		}
 		else if ( Everything_IsFolderResult( i ) )
 		{
 			rec->type = FSRecordType_e::Folder;
+			rec->icon_idx = 129; // NOTE folder icon idx
 		}
-		else
+		else // file
 		{
 			rec->type = FSRecordType_e::File;
+			LPCWSTR e = Everything_GetResultExtensionW( i );
+
+			if ( e != NULL )
+			{
+				std::string temp = Util.ConvertWideToUtf8( e );
+				std::map<std::string, int>::iterator it;
+				it = FileIcons.extensions.find( temp );
+
+				if ( it != FileIcons.extensions.end() )
+				{
+					rec->icon_idx = it->second;
+				}
+				else
+				{
+					rec->icon_idx = 91; // NOTE default icon idx
+				}
+			}
+			else
+			{
+				std::map<std::string, int>::iterator it;
+				it = FileIcons.extensions.find( "default" );
+				rec->icon_idx = it->second; //NOTE replace this with actual default icon idx
+				std::cout << "no extension" << std::endl;
+			}
+
 		}
 
 		// size
-		Everything_GetResultSize( i, &rec->size );
+		Everything_GetResultSize( i, &rec->size.li );
+		Util.FileSizeToString( rec->size.li, &rec->size.text );
+
+		// date
+		FILETIME filetime;
+		Everything_GetResultDateCreated( i, &filetime );
+		FileTimeToSystemTime( &filetime, &rec->date_created.systemtime );
+		Util.SystemTimeToString( rec->date_created.systemtime, &rec->date_created.text );
 
 		this->records.Push( rec );
 	}
