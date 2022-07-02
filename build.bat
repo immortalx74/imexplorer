@@ -6,7 +6,7 @@ set CONFIG=debug
 @echo Building with "%CONFIG%" configuration...
 
 set SOURCES=main.cpp external\imgui\imgui*.cpp
-set LINK= external/SDL2/lib/*.lib external/everything/lib/Everything64.lib opengl32.lib winmm.lib gdi32.lib shell32.lib
+set LINK= external/SDL2/lib/*.lib external/everything/lib/Everything64.lib opengl32.lib winmm.lib gdi32.lib shell32.lib ole32.lib
 
 REM /DUNICODE /D_UNICODE /utf-8
 IF %CONFIG%==debug set CFLAGS=/MP /MTd /EHsc /Zi /FC /nologo /W1 /Od

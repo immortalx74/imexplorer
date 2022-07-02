@@ -4,8 +4,23 @@
 
 FSTab::FSTab()
 {
+	this->filter = ( char* )malloc( 500 );
+	memset( this->filter, 0, 500 );
 	this->Populate();
 	FSTabList.tabs.Push( this );
+}
+
+FSTab::~FSTab()
+{
+	int len = this->path.folder.length - 1;
+
+	for ( int j = len; j >= 0; --j )
+	{
+		delete this->path.folder[ j ];
+	}
+
+	free( this->filter );
+	FSTabList.active_tab_index = 0;
 }
 
 void FSTab::Populate()
@@ -38,6 +53,12 @@ void FSTab::Populate()
 		}
 
 		search_query += "\"";
+
+		if ( strlen( this->filter ) > 0 )
+		{
+			std::string f = this->filter;
+			search_query += " " + f;
+		}
 	}
 
 	Everything_SetRequestFlags( Everything.request_flags );
@@ -45,23 +66,27 @@ void FSTab::Populate()
 	Everything_QueryW( TRUE );
 	DWORD record_count = Everything_GetNumResults();
 
+	for ( int i = 0; i < this->records.length; ++i )
+	{
+		delete this->records[ i ]->name;
+		delete this->records[ i ];
+	}
+
+	this->records.Clear();
+
 	if ( record_count > 0 )
 	{
-		if ( this->records.capacity == 0 )
+		if ( this->records.capacity < record_count )
 		{
-			this->records.Reserve( record_count );
+			if ( this->records.capacity == 0 )
+			{
+				this->records.Reserve( record_count );
+			}
+			else
+			{
+				this->records.Resize( record_count );
+			}
 		}
-		else
-		{
-			this->records.Clear();
-			// this->records.Destroy();
-			this->records.Reserve( record_count );
-		}
-	}
-	else
-	{
-		this->records.Clear();
-		this->records.Destroy();
 	}
 
 	// populate records
@@ -123,13 +148,14 @@ void FSTab::Populate()
 
 		// size
 		Everything_GetResultSize( i, &rec->size.li );
-		Util.FileSizeToString( rec->size.li, &rec->size.text );
+		rec->size.text = Util.FileSizeToStringKB( rec->size.li);
+
 
 		// date
 		FILETIME filetime;
 		Everything_GetResultDateCreated( i, &filetime );
 		FileTimeToSystemTime( &filetime, &rec->date_created.systemtime );
-		Util.SystemTimeToString( rec->date_created.systemtime, &rec->date_created.text );
+		rec->date_created.text = Util.SystemTimeToString( rec->date_created.systemtime );
 
 		this->records.Push( rec );
 	}
@@ -142,14 +168,18 @@ void FSTab::PathAddVolume( std::string volume_name )
 }
 void FSTab::PathAddFolder( std::string* folder_name )
 {
+	memset( this->filter, 0, 500 );
 	this->path.folder.Push( folder_name );
 	this->Populate();
 }
 
 void FSTab::PathRemoveFolder( int count )
 {
+	memset( this->filter, 0, 500 );
+
 	for ( int i = 0; i < count; ++i )
 	{
+		delete this->path.folder[ this->path.folder.length - 1 ];
 		this->path.folder.Pop();
 	}
 

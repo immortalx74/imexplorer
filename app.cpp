@@ -4,6 +4,7 @@
 
 void App_s::Init()
 {
+	SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE );
 	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
 	IMG_Init( IMG_INIT_PNG );
 	this->window = SDL_CreateWindow( "ImExplorer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->win_w, this->win_h, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
@@ -12,18 +13,26 @@ void App_s::Init()
 	ImGui_ImplSDL2_InitForSDLRenderer( this->window, this->renderer );
 	ImGui_ImplSDLRenderer_Init( this->renderer );
 
+	// Get dpi
+	SDL_SysWMinfo wmInfo;
+	SDL_VERSION( &wmInfo.version );
+	SDL_GetWindowWMInfo( window, &wmInfo );
+	HWND hwnd = wmInfo.info.win.window;
+	UINT dpi_pixels = GetDpiForWindow( hwnd );
+	this->dpi_scale = ( float )dpi_pixels / 96.0f;
+
 	// Fonts
 	this->imgui_io = &ImGui::GetIO();
 	ImFontGlyphRangesBuilder builder;
 	static const ImWchar ranges[] = { 0x20, 0xFFFF, 0, };
 	builder.AddRanges( ranges );
-	App.font = this->imgui_io->Fonts->AddFontFromFileTTF( "res/DejaVuSansMono.ttf", 16, NULL, ranges );
-	App.icon_font = this->imgui_io->Fonts->AddFontFromFileTTF( "res/icons.ttf", 16 );
+	App.font = this->imgui_io->Fonts->AddFontFromFileTTF( "res/DejaVuSansMono.ttf", 14.0f * this->dpi_scale, NULL, ranges );
+	App.icon_font = this->imgui_io->Fonts->AddFontFromFileTTF( "res/icons.ttf", 14.0f * this->dpi_scale );
 	this->imgui_io->Fonts->Build();
 
+	// Misc
 	this->imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
 	App.icon_tex = IMG_LoadTexture( this->renderer, "res/file_icons.png" );
-	// SDL_QueryTexture( App.icon_tex, NULL, NULL, ( int* )&App.icon_tex_size.x, ( int* )&App.icon_tex_size.y );
 	SDL_QueryTexture( App.icon_tex, NULL, NULL, &App.icon_tex_x, &App.icon_tex_y );
 	FileIcons.Init();
 	Settings.Read();
@@ -62,7 +71,43 @@ void App_s::ProcessEvents()
 		if ( this->event.type == SDL_WINDOWEVENT && this->event.window.event == SDL_WINDOWEVENT_RESIZED )
 		{
 			SDL_GetWindowSize( this->window, &this->win_w, &this->win_h );
+
+			SDL_SysWMinfo wmInfo;
+			SDL_VERSION( &wmInfo.version );
+			SDL_GetWindowWMInfo( window, &wmInfo );
+			HWND hwnd = wmInfo.info.win.window;
+			UINT dpi_pixels = GetDpiForWindow( hwnd );
+			this->dpi_scale = ( float )dpi_pixels / 96.0f;
+			// TODO: Handle this properly. Both the UI & fonts should scale when Windows display scale has changed.
 		}
+	}
+
+	ImGuiModFlags modifiers = 0;
+
+	if ( ImGui::IsKeyDown( ImGuiKey_ModCtrl ) )
+	{
+		modifiers |= ImGuiModFlags_Ctrl;
+	}
+	if ( ImGui::IsKeyDown( ImGuiKey_ModShift ) )
+	{
+		modifiers |= ImGuiModFlags_Shift;
+	}
+
+	if ( modifiers & ImGuiModFlags_Ctrl && ImGui::IsKeyPressed( ImGuiKey_A ) )
+	{
+		std::cout << "ctrl+a" << std::endl;
+	}
+	else if ( modifiers & ImGuiModFlags_Shift && ImGui::IsKeyPressed( ImGuiKey_A ) )
+	{
+		std::cout << "shift+a" << std::endl;
+	}
+	else if ( modifiers & ImGuiModFlags_Ctrl | ImGuiModFlags_Shift && ImGui::IsKeyPressed( ImGuiKey_A ) )
+	{
+		std::cout << "shift+ctrl+a" << std::endl;
+	}
+	else if ( modifiers == 0 && ImGui::IsKeyPressed( ImGuiKey_A ) )
+	{
+		std::cout << "a" << std::endl;
 	}
 }
 
@@ -97,6 +142,7 @@ void App_s::ShutDown()
 void App_s::SetColors()
 {
 	ImGuiStyle* style = &ImGui::GetStyle();
+	style->ScaleAllSizes( this->dpi_scale );
 	style->CellPadding = ImVec2( 10.0f, 0.0f );
 	ImVec4* colors = ImGui::GetStyle().Colors;
 	colors[ ImGuiCol_Text ] = ImVec4( 0.85f, 0.85f, 0.85f, 1.00f );
@@ -154,5 +200,4 @@ void App_s::SetColors()
 	colors[ ImGuiCol_NavWindowingHighlight ] = ImVec4( 1.00f, 1.00f, 1.00f, 0.70f );
 	colors[ ImGuiCol_NavWindowingDimBg ] = ImVec4( 0.80f, 0.80f, 0.80f, 0.20f );
 	colors[ ImGuiCol_ModalWindowDimBg ] = ImVec4( 0.80f, 0.80f, 0.80f, 0.35f );
-
 }

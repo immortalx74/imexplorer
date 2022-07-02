@@ -1,3 +1,21 @@
+// NOTE: Requires SDL 2.0.17+ Docking branch
+
+// TODO:
+// * Calc size in GB in file info window.
+// * Investigate column width issue with cellpadding.
+// * Implement column sorting.
+// * Fix properties issues: Doesn't work for volumes, simplify constructing path+filename for each record.
+// * Implement browsing history. (prob with a stack).
+// * Remember scroll position when navigating to prev folder.
+// * Font & UI scaling
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
 #include "app.cpp"
 #include "util.cpp"
 #include "ui.cpp"
@@ -5,8 +23,6 @@
 #include "settings.cpp"
 #include "toolbar.cpp"
 #include "file_icons.cpp"
-
-// NOTE: Requires SDL 2.0.17+
 
 int main( int, char** )
 {
@@ -28,7 +44,7 @@ int main( int, char** )
 			UI.RenderDebugWindow();
 		}
 
-		UI.RenderPropertiesWindow();
+		UI.RenderStatusBarWindow();
 		UI.EndDockSpace();
 
 		if ( App.demo )

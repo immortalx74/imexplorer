@@ -34,9 +34,13 @@ std::wstring Util_s::ConvertUtf8ToWide( const std::string& str )
 	return wstr;
 }
 
-void Util_s::FileSizeToString( LARGE_INTEGER n, char** output )
+std::string Util_s::FileSizeToStringKB( LARGE_INTEGER n)
 {
-	std::string sz = std::to_string( ( unsigned long long )ceil( ( double )n.QuadPart / 1024 ) );
+	std::string sz;
+	unsigned long long sz_num;
+
+	sz_num = ( unsigned long long )ceil( ( long double )n.QuadPart / 1024 );
+	sz = std::to_string( sz_num );
 	int len = sz.length();
 
 	for ( int i = len; i >= 0; --i )
@@ -46,18 +50,50 @@ void Util_s::FileSizeToString( LARGE_INTEGER n, char** output )
 			sz.insert( i, 1, ',' );
 		}
 	}
+
 	sz += " KB";
 
-	int str_len = sz.length();
-	*output = ( char* )malloc( str_len + 1 );
-	strcpy( *output, sz.c_str() );
+	return sz;
 }
 
-void Util_s::SystemTimeToString( SYSTEMTIME st, char** output )
+std::string Util_s::FileSizeToString( LARGE_INTEGER n )
+{
+	std::string size_units[ 4 ] = { " bytes", " KB", " MB", " GB" };
+	std::string sz;
+	long double sz_num;
+	std::ostringstream oss;
+	int idx = 0;
+
+	if ( n.QuadPart < 1024 )
+	{
+		sz_num = n.QuadPart;
+	}
+	else if ( n.QuadPart >= 1024 && n.QuadPart < 1048576 )
+	{
+		sz_num = ( long double )n.QuadPart / 1024;
+		idx = 1;
+	}
+	else if ( n.QuadPart >= 1048576 && n.QuadPart < 1073741824 )
+	{
+		sz_num = ( long double )n.QuadPart / 1048576;
+		idx = 2;
+	}
+	else
+	{
+		sz_num = ( long double )n.QuadPart / 1073741824;
+		idx = 3;
+	}
+
+	oss << std::setprecision( 3 ) << sz_num;
+	sz = oss.str();
+	sz += size_units[ idx ];
+
+	return sz;
+}
+
+std::string Util_s::SystemTimeToString( SYSTEMTIME st )
 {
 	std::string dt = std::to_string( st.wDay ) + "/" + std::to_string( st.wMonth ) + "/" + std::to_string( st.wYear ) + " " + std::to_string( st.wHour ) + ":" + std::to_string( st.wMinute );
 
-	int str_len = dt.length();
-	*output = ( char* )malloc( str_len + 1 );
-	strcpy( *output, dt.c_str() );
+	return dt;
 }

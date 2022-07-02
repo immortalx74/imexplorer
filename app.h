@@ -1,5 +1,7 @@
 #pragma once
 
+// #define STRICT_TYPED_ITEMIDS
+#define IMGUI_ENABLE_FREETYPE
 #include "external/imgui/imgui.h"
 #include "external/imgui/imgui_internal.h"
 #include "external/imgui/imgui_impl_sdl.h"
@@ -12,6 +14,12 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include "external/SDL2/include/SDL_syswm.h"
+#include <Shlobj.h>
+#include <atlbase.h>
+#include <atlstr.h>
+#include <sstream>
+#include <iomanip>
 
 // Forward declarations
 union Vec2;
@@ -26,7 +34,6 @@ struct Everything;
 struct FSRecord;
 
 // Types
-
 
 enum struct FSRecordType_e
 {
@@ -79,8 +86,9 @@ struct App_s
 {
 	bool debug = false;
 	bool demo = false;
-	int win_w = 800;
-	int win_h = 600;
+	int win_w = 1200;
+	int win_h = 800;
+	float dpi_scale;
 	bool running = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -92,6 +100,7 @@ struct App_s
 	ImVec2 icon_tex_size;
 	int icon_tex_x;
 	int icon_tex_y;
+	std::string* gstr;
 
 	void SetColors();
 	void Init();
@@ -107,8 +116,9 @@ struct Util_s
 	std::wstring Util_s::ConvertAnsiToWide( const std::string& str );
 	std::string ConvertWideToUtf8( const std::wstring& wstr );
 	std::wstring ConvertUtf8ToWide( const std::string& str );
-	void FileSizeToString( LARGE_INTEGER n, char** output );
-	void SystemTimeToString( SYSTEMTIME st, char** output );
+	std::string FileSizeToStringKB( LARGE_INTEGER n);
+	std::string FileSizeToString( LARGE_INTEGER n);
+	std::string SystemTimeToString( SYSTEMTIME st );
 } Util;
 
 struct ToolBarButton
@@ -127,10 +137,10 @@ struct UI_s
 {
 	ImGuiWindowFlags ds_window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus;
 	ImGuiWindowFlags fs_window_flags = 0; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
-	ImGuiWindowFlags properties_window_flags = 0; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
+	ImGuiWindowFlags status_bar_window_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 	ImGuiWindowFlags preview_window_flags = 0; /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 	ImGuiTabBarFlags fs_tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable; //  | ImGuiTabBarFlags_Reorderable
-	ImGuiTableFlags fs_table_flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Sortable;
+	ImGuiTableFlags fs_table_flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Sortable;
 	Array<ToolBarButton*> main_toolbar;
 	Array<ToolBarButton*> navigation_toolbar;
 
@@ -139,7 +149,7 @@ struct UI_s
 	void EndDockSpace();
 	void RenderFSWindow();
 	void RenderPreviewWindow();
-	void RenderPropertiesWindow();
+	void RenderStatusBarWindow();
 	void RenderTable();
 	void RenderMenu();
 	void RenderToolBar( Array<ToolBarButton*> toolbar );
@@ -159,8 +169,8 @@ struct Everything_s
 struct FSRecord
 {
 	char* name;
-	struct { LARGE_INTEGER li; char* text; } size;
-	struct { SYSTEMTIME systemtime; char* text; } date_created;
+	struct { LARGE_INTEGER li; std::string text; } size;
+	struct { SYSTEMTIME systemtime; std::string text; } date_created;
 	bool selected = false;
 	FSRecordType_e type;
 	int icon_idx;
@@ -182,6 +192,7 @@ struct FSTab
 	FSPath path;
 
 	FSTab();
+	~FSTab();
 	void PathAddVolume( std::string volume_name );
 	void PathAddFolder( std::string* folder_name );
 	void PathRemoveVolume();
@@ -214,28 +225,3 @@ struct FileIcons_s
 
 	void Init();
 } FileIcons;
-
-// 
-
-
-// Load Fonts
-// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-// - Read 'docs/FONTS.md' for more instructions and details.
-// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-// io.Fonts->AddFontDefault();
-// io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-// io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-// io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-// io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-// ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-// IM_ASSERT(font != NULL);
-
-
-// Poll and handle events (inputs, window resize, etc.)
-// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.

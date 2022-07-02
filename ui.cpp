@@ -33,8 +33,6 @@ void UI_s::BeginDockSpace()
 		UI.RenderToolBar( UI.navigation_toolbar );
 		ImGui::SameLine();
 		UI.RenderBreadCrumb();
-		ImGui::SameLine();
-		UI.RenderFilter();
 		ImGui::Separator();
 	}
 
@@ -55,8 +53,24 @@ void UI_s::RenderFSWindow()
 	{
 		for ( int i = 0; i < FSTabList.tabs.length; ++i )
 		{
+			// Delete tab on close
+			if ( !FSTabList.tabs[ i ]->opened )
+			{
+				if ( FSTabList.tabs.length == 1 )
+				{
+					FSTabList.tabs[ 0 ]->opened = true;
+				}
+				else
+				{
+					delete FSTabList.tabs[ i ];
+					FSTabList.tabs.Erase( i );
+					break;
+				}
+			}
+
 			if ( ImGui::BeginTabItem( ( FSTabList.tabs[ i ]->label + "###" + std::to_string( i ) ).c_str(), &FSTabList.tabs[ i ]->opened ) )
 			{
+
 				FSTabList.active_tab_index = i;
 
 				if ( ImGui::BeginTable( ( "fs_table##" + std::to_string( i ) ).c_str(), FSTabList.tabs[ i ]->num_columns, fs_table_flags ) )
@@ -85,20 +99,59 @@ void UI_s::RenderPreviewWindow()
 	ImGui::End();
 }
 
-void UI_s::RenderPropertiesWindow()
+void UI_s::RenderStatusBarWindow()
 {
-	ImGui::Begin( "file properties##properties_window", NULL, UI.properties_window_flags );
+	ImGui::Begin( "status bar##status_bar_window", NULL, UI.status_bar_window_flags );
+
+	int len = FSTabList.tabs[ FSTabList.active_tab_index ]->records.length;
+	FSRecord* rec;
+	LARGE_INTEGER total_size = { 0 };
+	int selected_count = 0;
+
+	for ( int i = 0; i < len; ++i )
+	{
+		rec = FSTabList.tabs[ FSTabList.active_tab_index ]->records[ i ];
+		if ( rec->selected )
+		{
+			total_size.QuadPart += rec->size.li.QuadPart;
+			selected_count++;
+		}
+	}
+
+	std::string total_size_str = Util.FileSizeToString( total_size);
+	ImGui::Text( std::to_string( len ).c_str() );
+	ImGui::SameLine();
+	ImGui::Text( "Items |" );
+	ImGui::SameLine();
+	ImGui::Text( std::to_string( selected_count ).c_str() );
+	ImGui::SameLine();
+	ImGui::Text( "Item(s) selected |" );
+	ImGui::SameLine();
+	ImGui::Text( total_size_str.c_str() );
+
+	ImGui::SameLine();
+	UI.RenderFilter();
+
 	ImGui::End();
 }
 
 void UI_s::RenderTable()
 {
-	int record_count = FSTabList.tabs[ FSTabList.active_tab_index ]->records.length;
-	ImGui::TableSetupColumn( "Name" );
-	ImGui::TableSetupColumn( "Size" );
-	ImGui::TableSetupColumn( "Date Created" );
+	ImGui::TableSetupColumn( "Name", ImGuiTableColumnFlags_DefaultSort );
+	ImGui::TableSetupColumn( "Size", ImGuiTableColumnFlags_DefaultSort );
+	ImGui::TableSetupColumn( "Date Created", ImGuiTableColumnFlags_DefaultSort );
 	ImGui::TableSetupScrollFreeze( 0, 1 );
 	ImGui::TableHeadersRow();
+
+	if ( ImGuiTableSortSpecs* specs = ImGui::TableGetSortSpecs() )
+	{
+		if ( specs->SpecsDirty )
+		{
+			// std::cout << "dirty" << std::endl;
+		}
+	}
+
+	int record_count = FSTabList.tabs[ FSTabList.active_tab_index ]->records.length;
 
 	for ( int i = 0; i < record_count; i++ )
 	{
@@ -118,17 +171,33 @@ void UI_s::RenderTable()
 		// column name
 		if ( ImGui::Selectable( record->name, record->selected, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns ) )
 		{
+			// Selection
+			if ( ImGui::GetIO().KeyCtrl )
+			{
+				record->selected = !record->selected;
+			}
+			else
+			{
+				for ( int i = 0; i < record_count; ++i )
+				{
+					FSTabList.tabs[ FSTabList.active_tab_index ]->records[ i ]->selected = false;
+				}
+
+				record->selected = true;
+			}
+
 			if ( ImGui::IsMouseDoubleClicked( 0 ) )
 			{
 				if ( record->type == FSRecordType_e::Volume )
 				{
 					FSTabList.tabs[ FSTabList.active_tab_index ]->PathAddVolume( record->name );
+					break; //Previous call calls Populate() which deletes current records.
 				}
 				else if ( record->type == FSRecordType_e::Folder )
 				{
-					std::string* temp = new std::string( record->name ); // NOTE these are never deleted.
-					FSTabList.tabs[ FSTabList.active_tab_index ]->PathAddFolder( temp );
-					return; // NOTE Early return. Previous call changes the record_count.
+					std::string* rname = new std::string( record->name );
+					FSTabList.tabs[ FSTabList.active_tab_index ]->PathAddFolder( rname );
+					break; // Previous call changes the record_count.
 				}
 				else if ( record->type == FSRecordType_e::File )
 				{
@@ -144,25 +213,27 @@ void UI_s::RenderTable()
 					std::string paf = vol + path + fname;
 
 					ShellExecuteW( GetDesktopWindow(), L"open", Util.ConvertUtf8ToWide( paf ).c_str(), 0, 0, SW_SHOW );
+					// SHObjectProperties( NULL, SHOP_FILEPATH, Util.ConvertUtf8ToWide( paf ).c_str(), NULL );
 				}
 			}
-			// if ( !ImGui::GetIO().KeyCtrl )
-			// {
-			// 	memset( selected, 0, sizeof( selected ) );
-			// }
-			// selected[ tab_index ] = !selected[ i ];
 		}
 
 		// column size
 		ImGui::TableSetColumnIndex( 1 );
+
+		// Right align
+		ImVec2 content_width = ImGui::GetContentRegionAvail();
+		ImVec2 text_size = ImGui::CalcTextSize( record->size.text.c_str() );
+		ImGui::SetCursorPosX( ImGui::GetCursorPosX() + content_width.x - text_size.x );
+
 		if ( record->type == FSRecordType_e::File )
 		{
-			ImGui::Text( record->size.text );
+			ImGui::Text( record->size.text.c_str() );
 		}
 
 		// column date created
 		ImGui::TableSetColumnIndex( 2 );
-		ImGui::Text( record->date_created.text );
+		ImGui::Text( record->date_created.text.c_str() );
 	}
 }
 
@@ -272,13 +343,14 @@ void UI_s::RenderBreadCrumb()
 {
 	ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0, 0 ) );
 	ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
-	ImGui::BeginChild( "breadcrumb_container", ImVec2( ImGui::GetWindowWidth() / 1.8f, 20 ), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse );
+
+	ImGui::BeginChild( "breadcrumb_container", ImVec2( ImGui::GetWindowWidth() - ImGui::GetCursorPosX() - 10, ImGui::GetFrameHeight() ), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse );
 
 	ImGui::SetScrollX( ImGui::GetScrollMaxX() );
 
 	int len = FSTabList.tabs[ FSTabList.active_tab_index ]->path.folder.length;
 
-	if ( ImGui::Button( ( "This PC##adada" ) ) )
+	if ( ImGui::Button( ( "This PC" ) ) )
 	{
 		FSTabList.tabs[ FSTabList.active_tab_index ]->PathRemoveFolder( len );
 		FSTabList.tabs[ FSTabList.active_tab_index ]->PathRemoveVolume();
@@ -305,9 +377,11 @@ void UI_s::RenderBreadCrumb()
 			ImGui::SameLine();
 			ImGui::Text( ">" );
 			ImGui::SameLine();
+
 			if ( ImGui::Button( cur_path.folder[ i ]->c_str() ) )
 			{
 				FSTabList.tabs[ FSTabList.active_tab_index ]->PathRemoveFolder( len - i - 1 );
+				break; // Previous call changes len.
 			}
 		}
 	}
@@ -318,11 +392,14 @@ void UI_s::RenderBreadCrumb()
 
 void UI_s::RenderFilter()
 {
-	static char* buf = ( char* )malloc( 100 );
-	memset( buf, 0, 100 );
-	ImGui::PushItemWidth( ImGui::GetWindowWidth() - ImGui::GetCursorPosX() - 2 );
-	ImGui::InputText( "##type here", buf, 100 );
+	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 0.0f ) );
+	ImGui::PushItemWidth( ImGui::GetWindowWidth() - ImGui::GetCursorPosX() - 10 );
+	if ( ImGui::InputTextWithHint( "##type here", "*filter results*", FSTabList.tabs[ FSTabList.active_tab_index ]->filter, 100 ) )
+	{
+		FSTabList.tabs[ FSTabList.active_tab_index ]->Populate();
+	}
 	ImGui::PopItemWidth();
+	ImGui::PopStyleVar();
 }
 
 void UI_s::RenderSettingsWindow()
@@ -352,7 +429,7 @@ void UI_s::RenderSettingsWindow()
 void UI_s::RenderDebugWindow()
 {
 	ImGui::Begin( "Debug Window" );
-	ImGui::Text( std::to_string( App.win_w ).c_str() );
+	ImGui::Text( std::to_string( FSTabList.active_tab_index ).c_str() );
 	ImGui::End();
 }
 
