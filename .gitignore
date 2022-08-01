@@ -5,6 +5,4 @@
 build
 include
 lib
-external
-res
 scrap.cpp
