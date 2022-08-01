@@ -118,7 +118,7 @@ void UI_s::RenderStatusBarWindow()
 		}
 	}
 
-	std::string total_size_str = Util.FileSizeToString( total_size);
+	std::string total_size_str = Util.FileSizeToString( total_size );
 	ImGui::Text( std::to_string( len ).c_str() );
 	ImGui::SameLine();
 	ImGui::Text( "Items |" );
@@ -394,10 +394,17 @@ void UI_s::RenderFilter()
 {
 	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 0.0f ) );
 	ImGui::PushItemWidth( ImGui::GetWindowWidth() - ImGui::GetCursorPosX() - 10 );
+
+	if ( ImGui::IsKeyDown( ImGuiKey_ModCtrl ) && ImGui::IsKeyPressed( ImGuiKey_F ) )
+	{
+		ImGui::SetKeyboardFocusHere();
+	}
+
 	if ( ImGui::InputTextWithHint( "##type here", "*filter results*", FSTabList.tabs[ FSTabList.active_tab_index ]->filter, 100 ) )
 	{
 		FSTabList.tabs[ FSTabList.active_tab_index ]->Populate();
 	}
+
 	ImGui::PopItemWidth();
 	ImGui::PopStyleVar();
 }

@@ -34,7 +34,7 @@ std::wstring Util_s::ConvertUtf8ToWide( const std::string& str )
 	return wstr;
 }
 
-std::string Util_s::FileSizeToStringKB( LARGE_INTEGER n)
+std::string Util_s::FileSizeToStringKB( LARGE_INTEGER n )
 {
 	std::string sz;
 	unsigned long long sz_num;
@@ -96,4 +96,82 @@ std::string Util_s::SystemTimeToString( SYSTEMTIME st )
 	std::string dt = std::to_string( st.wDay ) + "/" + std::to_string( st.wMonth ) + "/" + std::to_string( st.wYear ) + " " + std::to_string( st.wHour ) + ":" + std::to_string( st.wMinute );
 
 	return dt;
+}
+
+std::string Util_s::GetActiveTabCombinedPath()
+{
+	std::string combined_path;
+
+	for ( int i = 0; i < FSTabList.tabs[ FSTabList.active_tab_index ]->path.folder.length; ++i )
+	{
+		combined_path += *FSTabList.tabs[ FSTabList.active_tab_index ]->path.folder[ i ];
+		combined_path += "\\";
+	}
+
+	return combined_path;
+}
+
+void Util_s::GetSelectedRecordsFullFileNames( Array<std::string*>* arr )
+{
+	std::string vol = FSTabList.tabs[ FSTabList.active_tab_index ]->path.volume;
+	std::string* full_filename;
+	int len = FSTabList.tabs[ FSTabList.active_tab_index ]->records.length;
+	FSRecord* rec;
+
+	for ( int i = 0; i < len; ++i )
+	{
+		rec = FSTabList.tabs[ FSTabList.active_tab_index ]->records[ i ];
+		if ( rec->selected )
+		{
+			full_filename = new std::string( vol + "\\" );
+			*full_filename += Util.GetActiveTabCombinedPath();
+			*full_filename += rec->name;
+
+			arr->Push( full_filename );
+		}
+	}
+}
+
+void Util_s::DisplayMultiRecordProperties( Array<std::string*>& filenames, int file_count )
+{
+	LPITEMIDLIST* pidlDrives = ( LPITEMIDLIST* )malloc( sizeof( LPITEMIDLIST ) * file_count );
+	IShellFolder* psfDesktop;
+	IDataObject* pData;
+	HRESULT hr;
+	ULONG chEaten = 0, dwAttributes = 0;
+
+	hr = SHGetSpecialFolderLocation( NULL, CSIDL_DRIVES, pidlDrives );
+	if ( SUCCEEDED( hr ) )
+	{
+		hr = SHGetDesktopFolder( &psfDesktop );
+
+		for ( int i = 0; i < file_count; ++i )
+		{
+			CString currentFilePath = filenames[ i ]->c_str();
+			psfDesktop->ParseDisplayName( NULL, NULL, currentFilePath.GetBuffer(), &chEaten, ( LPITEMIDLIST* )&pidlDrives[ i ], &dwAttributes );
+		}
+
+		if ( SUCCEEDED( hr ) )
+		{
+			hr = psfDesktop->GetUIObjectOf( NULL, file_count, ( LPCITEMIDLIST* )pidlDrives, IID_IDataObject, NULL, ( void** )&pData );
+			if ( SUCCEEDED( hr ) )
+			{
+				CoInitialize( NULL );
+				hr = SHMultiFileProperties( pData, 0 );
+				if ( SUCCEEDED( hr ) )
+				{
+					pData->Release();
+				}
+				CoUninitialize();
+			}
+			if ( psfDesktop != NULL )
+			{
+				psfDesktop->Release();
+			}
+		}
+		for ( int i = 0; i < file_count; ++i )
+		{
+			ILFree( pidlDrives[ i ] );
+		}
+	}
 }

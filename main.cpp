@@ -1,7 +1,6 @@
 // NOTE: Requires SDL 2.0.17+ Docking branch
 
 // TODO:
-// * Calc size in GB in file info window.
 // * Investigate column width issue with cellpadding.
 // * Implement column sorting.
 // * Fix properties issues: Doesn't work for volumes, simplify constructing path+filename for each record.

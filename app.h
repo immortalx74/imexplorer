@@ -116,9 +116,12 @@ struct Util_s
 	std::wstring Util_s::ConvertAnsiToWide( const std::string& str );
 	std::string ConvertWideToUtf8( const std::wstring& wstr );
 	std::wstring ConvertUtf8ToWide( const std::string& str );
-	std::string FileSizeToStringKB( LARGE_INTEGER n);
-	std::string FileSizeToString( LARGE_INTEGER n);
+	std::string FileSizeToStringKB( LARGE_INTEGER n );
+	std::string FileSizeToString( LARGE_INTEGER n );
 	std::string SystemTimeToString( SYSTEMTIME st );
+	std::string GetActiveTabCombinedPath();
+	void GetSelectedRecordsFullFileNames( Array<std::string*>* arr );
+	void DisplayMultiRecordProperties( Array<std::string*>& filenames, int file_count );
 } Util;
 
 struct ToolBarButton
